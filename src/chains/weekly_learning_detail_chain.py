@@ -49,15 +49,3 @@ class WeeklyLearningDetailChain:
         return output_json
 
 
-if __name__ == "__main__":
-    # Exemplo de uso
-    input_data = WeeklyActivityChainInput(
-        week_objective="Alcançar fluência básica em saudações e apresentações",
-        activities="Assistir diálogos curtos, praticar leitura em voz alta",
-        theory="Uso do verbo 'to be' e estrutura básica de frases",
-        days_week="5",
-        hour_day="1",
-        level="iniciante",
-    )
-    chain = WeeklyLearningDetailChain()
-    result = chain.execute(input_data)
