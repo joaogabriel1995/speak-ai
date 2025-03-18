@@ -5,7 +5,7 @@ from .wekly_plan_detail_schema import DailyPlan
 
 # Modelo para o plano diário completo
 class ClassRoomInput(BaseModel):
-    daily_plan: List[DailyPlan] = Field(
+    weekly_plan: List[DailyPlan] = Field(
         ...,
         description="An array of dictionaries where each entry represents a day's study plan.",
     )
