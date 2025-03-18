@@ -15,9 +15,3 @@ class EnvLoad:
         Retorna todas as variáveis carregadas.
         """
         return self.variables
-
-
-# Exemplo de uso
-if __name__ == "__main__":
-    env = EnvLoad()
-    print(env.get_variables())
