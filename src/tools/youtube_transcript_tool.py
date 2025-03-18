@@ -21,7 +21,7 @@ class YoutubeLoaderTool:
 
     def __init__(self):
         self.tool = StructuredTool(
-            name="youtube_search",
+            name="youtube_transcription",
             func=self.load,
             description="Ferramenta para extrair legenda de videos do youtube",
             args_schema=YoutubeLoaderToolInput,
@@ -29,13 +29,6 @@ class YoutubeLoaderTool:
 
     async def load(self, youtube_url: str, language: list[str] = ["en"]):
         try:
-
-            # video_id = YoutubeLoader.extract_video_id(youtube_url)
-            # print(video_id)
-            # transcript_list = YouTubeTranscriptApi.fetch(
-            #     video_id, language
-            # )
-            # print(transcript_list)
             channel = await RabbitMQ().get_channel()
             rpc_client = RpcClient(channel)
             await rpc_client.setup()
@@ -49,17 +42,8 @@ class YoutubeLoaderTool:
             return [
                 Document(page_content=str(responseJson.get("text")), metadata=metadata)
             ]
-        # except Exception as e:
-        #     channel = await RabbitMQ().get_channel()
-        #     rpc_client = RpcClient(channel)
-        #     await rpc_client.setup()
-        #     payload = {"action": "process_data", "data": "exemplo"}
-        #     try:
-        #         response = await rpc_client.call("test_queue", payload)
-        #         print("Resposta recebida:", response)
         except Exception as e:
             print("Erro na chamada RPC:", e)
-            # raise ValueError(f"Failed to load transcript for video {video_id}: {e}")
 
     def get_tool(self):
         return self.tool
