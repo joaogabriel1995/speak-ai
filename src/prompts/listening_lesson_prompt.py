@@ -3,6 +3,10 @@ from textwrap import dedent
 from langchain.output_parsers import PydanticOutputParser
 from schemas.week_plan_schema import WeekPlan  # Importando o esquema ajustado
 
+from schemas.listening_tool_schema import (
+    ListeningToolOutput,
+)  # Importando o esquema ajustado
+
 
 def listening_exercise_prompt() -> PromptTemplate:
     """
@@ -12,71 +16,71 @@ def listening_exercise_prompt() -> PromptTemplate:
         - duration: int
         - transcription: Document
     """
-    # output_parser = PydanticOutputParser(pydantic_object=WeekPlan)
-    # format_instructions = output_parser.get_format_instructions()
+    output_parser = PydanticOutputParser(pydantic_object=ListeningToolOutput)
+    format_instructions = output_parser.get_format_instructions()
 
     template = dedent(
         """\
-                
-        Objetivo: Criar uma aula interativa de inglês com base na transcrição e no vídeo fornecidos, adaptada para o nível {level} do aluno.
+    📚 **Aula Interativa de Inglês**
 
-        Estrutura da Aula
-        Introdução
-        
-        tarefa: {task}
-        Duração da atividade: {duration}
+    🎯 **Tema da Aula:** {task}
 
-        📍 Instruções para a IA:
+    **Duração:** {duration}
+    **Nível:** {level}
 
-        Analise o vídeo e a transcrição fornecidos.
+    📖 **Estrutura da Aula**
 
-        Identifique o tema central da aula.
-        Extraia vocabulário essencial e expressões-chave.
-        Estruture o conteúdo de maneira lógica e progressiva.
-        Crie uma aula interativa dividida nas seguintes seções:
+    ## 📝 **Introdução**
+    - **Tema da aula:** Identifique o tema principal com base no vídeo.
+    - **Objetivos:** Defina objetivos específicos adaptados ao nível do aluno.
+    - **Materiais Necessários:** áudio, transcrição e materiais adicionais para suporte.
 
-        📖 Estrutura da Aula
-        1. Introdução
-        Breve explicação do tema abordado no vídeo.
-        Objetivos da aula (por exemplo, aprender como pedir café em inglês).
-        Material necessário para a aula (áudio, vídeo, imagens de apoio).
-        2. Atividade de Escuta (Listening)
-        Primeira escuta: O aluno ouve o áudio/vídeo sem a transcrição e responde a perguntas gerais.
-        Segunda escuta: O aluno lê a transcrição enquanto escuta, identificando palavras e expressões-chave.
-        3. Vocabulário Essencial e Expressões Comuns
-        Liste palavras importantes extraídas do vídeo e suas traduções.
-        Inclua expressões informais e comuns no contexto (exemplo: Can I get…? ou I’d like…).
-        Adicione frases de exemplo para cada termo, incentivando a aplicação no dia a dia.
-        4. Atividade de Pronúncia (Speaking & Shadowing)
-        Selecione frases do vídeo para que os alunos ouçam e repitam, focando na entonação e no ritmo natural.
-        Sugira a gravação da própria voz para comparação.
-        5. Prática de Conversação (Speaking Practice)
-        Crie um diálogo simulado baseado no tema do vídeo.
-        Exemplo: se o tema for pedir café, inclua interações comuns entre cliente e atendente.
-        Sugira perguntas e respostas para reforçar o aprendizado.
-        6. Atividade de Escrita (Writing)
-        Peça ao aluno para escrever um pequeno parágrafo ou diálogo usando as palavras e expressões aprendidas.
-        Exemplo: Escreva um diálogo entre você e um atendente em uma cafeteria.
-        7. Revisão e Fixação
-        Resumo dos pontos principais da aula.
-        Reforço do vocabulário aprendido.
-        Sugestões de práticas reais (como tentar pedir um café em inglês na próxima oportunidade).
-        💡 Personalização da Aula
-        Se o nível do aluno for iniciante: Use frases curtas e estruturas simples.
-        Se for intermediário: Introduza conectores e variações nas frases.
-        Se for avançado: Inclua expressões idiomáticas e variações de linguagem natural.
-        📌 Formato esperado da resposta:
-        A IA deve fornecer o conteúdo estruturado como um documento de aula, pronto para ser utilizado, incluindo exemplos práticos e atividades interativas.
+    ## 🎧 **Atividade de Escuta (Listening)**
 
-        Crie a aula a da transcrição fornecida do video 
-        Segue abaixo a transcrição: 
-        {transcription}
+    ### Primeira Escuta:
+    Ouça o áudio sem ler a transcrição.
+    Responda:
+    1. Qual é o assunto central discutido?
+    2. Quem são as pessoas envolvidas?
+    3. O que está sendo solicitado ou negociado?
+
+    ## 🔎 **Segunda Escuta - Detalhes e Vocabulário**
+    - **Escute novamente acompanhando a transcrição abaixo.**
+    - Identifique palavras e expressões importantes usadas no diálogo:
+      - Liste ao menos 5 palavras-chave ou expressões importantes do áudio.
+      - Exemplo: expressões comuns, frases úteis e vocabulário essencial.
+
+    ## 🎙️ **Atividade de Pronúncia (Shadowing)**
+    - Identifique e liste pelo menos duas frases do vídeo/transcrição para o aluno praticar a pronúncia.
+    - Instrua o aluno a ouvir o áudio e repetir as frases, tentando copiar a entonação e ritmo.
+
+    ## 💬 **Prática de Conversação**
+    - Desenvolva um diálogo simples e interativo relacionado ao tema do vídeo.
+    - Inclua perguntas e respostas práticas para o aluno treinar interação oral.
+
+    ## ✏️ **Atividade de Escrita**
+    - Proponha uma atividade curta de escrita baseada no tema, usando o vocabulário identificado.
+    - Exemplo: Crie um breve diálogo ou email utilizando as novas palavras e expressões.
+
+    ## ✅ **Revisão e Dicas Finais**
+    - Faça um resumo curto dos principais pontos aprendidos na aula.
+    - Dê uma dica prática de como usar o vocabulário aprendido na vida real.
+
+    📍 **Personalização da Aula**
+    - **Iniciante:** Utilize frases simples e repetições.
+    - **Intermediário:** Incentive o uso de conectores e diferentes tempos verbais.
+    - **Avançado:** Estimule a inclusão de expressões idiomáticas e frases mais complexas.
+    
+    ## 📜 **Transcrição Fornecida**
+    {transcription} 
+    
+    {format_instructions}
 
     """
     )
     listening_lesson_prompt = PromptTemplate(
         input_variables=["level", "task", "duration", "transcription"],
-        # partial_variables={"format_instructions": format_instructions},
+        partial_variables={"format_instructions": format_instructions},
         template=template,
     )
     return listening_lesson_prompt
