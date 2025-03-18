@@ -15,15 +15,11 @@ class WeeklyLearningDetailChain:
         Inicializa a WeeklyActivityChain com o prompt e o LLM configurados.
         """
         self.prompt = weekly_activity_prompt()
-        self.llm = ChatOpenAI(
-            model="gpt-4o",
-            api_key=api_key)
+        self.llm = ChatOpenAI(model="gpt-4o-mini", api_key=api_key)
         self.output_parser = PydanticOutputParser(pydantic_object=WeeklyStudyPlanDetail)
         self.format_instructions = self.output_parser.get_format_instructions()
 
-    def execute(
-        self, input_data: WeeklyActivityChainInput
-    ) -> List[WeeklyStudyPlanDetail]:
+    def execute(self, input_data: WeeklyActivityChainInput) -> WeeklyStudyPlanDetail:
         """
         Executa o chain para gerar o plano diário de estudos para uma semana,
         retornando a resposta parseada em JSON.
@@ -47,5 +43,3 @@ class WeeklyLearningDetailChain:
         # Parse the response
         output_json = self.output_parser.parse(response.content)
         return output_json
-
-
