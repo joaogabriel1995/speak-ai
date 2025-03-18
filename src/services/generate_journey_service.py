@@ -1,6 +1,6 @@
 from schemas.learning_journey_schema import LearningJourneyInput
 from chains.learning_journey_chain import LearningJourneyChain
-from config.env_load import EnvLoad 
+from config.env_load import EnvLoad
 
 
 class GenerateLearningJourneyService:
@@ -16,9 +16,8 @@ class GenerateLearningJourneyService:
         learning_journey_input = LearningJourneyInput(
             level=level, duration=duration, days_week=days_week, hour_day=hour_day
         )
-        learningJourneyChain = LearningJourneyChain(self.config.open_api_key)
+        learningJourneyChain = LearningJourneyChain(self.config.get("open_api_key"))
         result = learningJourneyChain.execute(learning_journey_input)
-        print("result result result result", result)
 
         plan = [
             {
