@@ -9,9 +9,7 @@ from typing import List
 class LearningJourneyChain:
     def __init__(self, api_key):
         self.prompt = learning_journey_prompt()
-        self.llm = ChatOpenAI(
-            model="gpt-4o",
-            api_key=api_key)
+        self.llm = ChatOpenAI(model="gpt-4o-mini", api_key=api_key)
         self.output_parser = PydanticOutputParser(pydantic_object=LearningJourneyOutPut)
         self.format_instructions = self.output_parser.get_format_instructions()
 
@@ -38,4 +36,3 @@ class LearningJourneyChain:
         # Parse the response
         output_json = self.output_parser.parse(response.content)
         return output_json
-
