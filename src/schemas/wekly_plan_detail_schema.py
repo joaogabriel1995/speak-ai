@@ -1,5 +1,6 @@
-from pydantic import BaseModel, Field, conint, constr
-from typing import List, Literal, Annotated
+from pydantic import BaseModel, Field, conint, constr, ConfigDict
+from typing import List, Literal, Annotated, Optional, Union
+from schemas.listening_tool_schema import ListeningToolOutput
 
 
 # Modelo para uma única atividade do dia
@@ -29,6 +30,12 @@ class DailyActivity(BaseModel):
     )
 
 
+class DailyActivityWithContent(DailyActivity):
+    content: Optional[Union[ListeningToolOutput, str]] = Field(
+        None, description="Generated content for the activity."
+    )
+
+
 # Modelo para um dia do plano de estudo
 class DailyPlan(BaseModel):
     day: Annotated[int, conint(ge=1)] = Field(
@@ -46,11 +53,45 @@ class DailyPlan(BaseModel):
     )
 
 
+# Modelo para um dia do plano de estudo
+class DailyPlanWithContent(BaseModel):
+    day: Annotated[int, conint(ge=1)] = Field(
+        ...,
+        description="The day of the week within the study schedule (1 to {days_week}).",
+    )
+    activities: List[DailyActivityWithContent] = Field(
+        ...,
+        min_items=1,
+        description="Array of activity objects representing specific tasks for the day.",
+    )
+    total_duration: Annotated[int, conint(ge=1)] = Field(
+        ...,
+        description="The total duration of all activities in the day, in minutes. Must equal {hour_day} * 60.",
+    )
+
 # Modelo para o plano diário completo
 class WeeklyStudyPlanDetail(BaseModel):
-    daily_plan: List[DailyPlan] = Field(
+    weekly_plan: List[DailyPlan] = Field(
         ...,
         description="An array of dictionaries where each entry represents a day's study plan.",
+    )
+
+    def to_dict(self) -> dict:
+        """Converts the model to a dictionary."""
+        return self.model_dump()
+
+    def to_json(self) -> str:
+        """Converts the model to a JSON string."""
+        return self.model_dump_json(indent=2)
+
+
+class WeeklyStudyPlanDetailWithContent(BaseModel):
+    weekly_plan: List[DailyPlanWithContent] = Field(
+        ...,
+        description="An array of dictionaries where each entry represents a day's study plan.",
+    )
+    user_id: Optional[str] = Field(
+        None, description="The unique identifier of the user associated with this study plan."
     )
 
     def to_dict(self) -> dict:
@@ -85,3 +126,11 @@ class WeeklyActivityChainInput(BaseModel):
     def to_json(self) -> str:
         """Converts the model to a JSON string."""
         return self.model_dump_json(indent=2)
+    
+    model_config = ConfigDict(
+        alias_generator=lambda x: ''.join(
+            word.capitalize() if i else word for i, word in enumerate(x.split("_"))
+        ),
+        populate_by_name=True
+    )
+
