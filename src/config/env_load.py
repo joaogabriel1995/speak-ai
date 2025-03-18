@@ -8,7 +8,7 @@ class EnvLoad:
         Inicializa a classe e carrega as variáveis do arquivo .env em um dicionário.
         """
         load_dotenv(env_file)
-        self.variables = {"open_api_key": os.getenv("OPENAI_API_KEY")}
+        self.variables = {"open_api_key": os.getenv("OPENAI_API_KEY"), "youtube_api_key": os.getenv("YOUTUBE_API_KEY")}
 
     def get_variables(self):
         """
