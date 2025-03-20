@@ -26,4 +26,5 @@ async def learning_hub_consumer(message: aio_pika.IncomingMessage):
             hour_day=data.get("hourDay"),
             level=data.get("level"),
             user_id=data.get("userId"),
+            learning_journey_id=data.get("learningDetailId"),
         )
