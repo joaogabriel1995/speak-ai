@@ -42,7 +42,7 @@ class ListeningChain:
         Inicializa a cadeia de listening com um modelo de linguagem (LLM) e ferramentas para buscar vídeos e podcasts.
         """
 
-        self.llm = ChatOpenAI(model="gpt-4o-mini",api_key=api_key,temperature=0,  
+        self.llm = ChatOpenAI(model="gpt-4o",api_key=api_key,temperature=0,  
         )
         self.youtube_tool = YoutubeSearchTool().get_tool()
         self.tools = [self.youtube_tool]
@@ -51,15 +51,8 @@ class ListeningChain:
         self.format_instructions = self.output_parser.get_format_instructions()
 
     async def execute(self, task: str, resource: str, duration: int, level: str):
-        """
-        Executa a tarefa de listening.
-        O LLM decide qual ferramenta usar com base no recurso (YouTube para vídeos, listening_tool para outros casos).
-        """
-        
         prompt = self.generate_prompt(task, resource, duration, level)
-
         messages = [HumanMessage(content=prompt)]
-
         response = self.llm_with_tool.invoke(messages)
         messages.append(response)
 
@@ -67,43 +60,36 @@ class ListeningChain:
             for tool_call in response.tool_calls:
                 tool_name = tool_call["name"]
                 tool_args = tool_call["args"]
-             
-                if (
-                    tool_name == "youtube_search"
-                ):  # Nome correto da ferramenta do YouTube
-                    print(tool_args)
+                if tool_name == "youtube_search":
+                    print("tool_args", tool_args["query"])
+                    print(type(tool_args))
                     tool_input = YoutubeSearchToolInput(**tool_args)
                     result = self.youtube_tool.invoke({"query": tool_input.query})
-                    print(result)
-
-                    youtube = YoutubeLoaderTool()   
-                    transcription = await youtube.get_tool().invoke(
-                        {"youtube_url": result[0]['video_id'], "language": ["en"]}
-                    )
-                    prompt = listening_exercise_prompt()
-                    chain = prompt | self.llm
-                    response = chain.invoke(
-                        {
-                            "task": task,
-                            "duration": duration,
-                            "level": level,
-                            "transcription": transcription,
-                        }
-                    )
-                    # print("TRANSCRIÇÃO:",transcription)
-                    output_json = self.output_parser.parse(response.content)
-                    return output_json
-
+                    print("RESULTADO:", result)
+                    if result:  # Verifica se há resultados
+                        youtube = YoutubeLoaderTool()
+                        transcription = await youtube.get_tool().invoke(
+                            {"youtube_url": result[0]['video_id'], "language": ["en"]}
+                        )
+                        prompt = listening_exercise_prompt()
+                        chain = prompt | self.llm
+                        response = chain.invoke(
+                            {
+                                "task": task,
+                                "duration": duration,
+                                "level": level,
+                                "transcription": transcription,
+                            }
+                        )
+                        output_json = self.output_parser.parse(response.content)
+                        return output_json
+                    else:
+                        print("Nenhum vídeo encontrado para a consulta.")
+                        return {"error": "Nenhum vídeo encontrado para a consulta fornecida."}
                 else:
                     continue
-
-                print(f"✅ Resultado da ferramenta `{tool_name}`: {result}")
-                return result  # Retorna o resultado da primeira ferramenta chamada (pode ser ajustado)
         else:
-            return (
-                response.content
-            )  # Retorna a resposta direta do LLM se não houver chamadas de ferramentas
-
+            return response.content
     def generate_prompt(self, task: str, resource: str, duration: int, level: str) -> str:
         """
         Gera um prompt otimizado para a LLM, garantindo que a busca de vídeos seja altamente relevante para o assunto da aula.
@@ -116,7 +102,6 @@ class ListeningChain:
             f"Instruções:\n"
             f"- Se o recurso for 'YouTube' ou contiver 'podcast' (exemplo: 'ESL Pod podcast'), use a ferramenta 'YouTubeSearchTool' para buscar vídeos ou podcasts altamente relevantes para a **tarefa** e **nível do aluno**.\n"
             f"- A pesquisa deve conter palavras-chave da **tarefa** para garantir que os vídeos sejam sobre o assunto exato que está sendo estudado.\n"
-            f"- Reformule a query para otimizar os resultados, adicionando informações contextuais relevantes (por exemplo: '{task} ', 'exemplos práticos de {task}', 'como melhorar {task} listening').\n"
             f"- Priorize vídeos educativos, explicativos e que ofereçam exercícios práticos sobre o tema.\n"
             f"- Se possível, busque vídeos recentes para garantir que o conteúdo esteja atualizado.\n"
             f"\n"
