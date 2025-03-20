@@ -13,13 +13,13 @@ class DailyActivity(BaseModel):
         description="The specific resource or tool to be used (e.g., 'ESL Pod podcast', 'Anki app').",
     )
     skill: Literal[
-        "listening",
-        "speaking",
-        "vocabulary",
-        "pronunciation",
-        "grammar",
-        "writing",
-        "reading",
+        "LISTENING",
+        "SPEAKING",
+        "VOCABULARY",
+        "PRONUNCIATION",
+        "GRAMMAR",
+        "WRITING",
+        "READING",
     ] = Field(..., description="The primary skill being practiced by the task.")
     duration: Annotated[int, conint(ge=1)] = Field(
         ..., description="The estimated time for the task in minutes (min: 1)."
@@ -91,8 +91,10 @@ class WeeklyStudyPlanDetailWithContent(BaseModel):
         description="An array of dictionaries where each entry represents a day's study plan.",
     )
     user_id: Optional[str] = Field(
-        None, description="The unique identifier of the user associated with this study plan."
+        None, description="The unique identifier of the user associated with this study plan.",
     )
+    learning_journey_id: Optional[str] = Field(
+        None, description="The unique identifier of the learning journey associated with this study plan.")
 
     def to_dict(self) -> dict:
         """Converts the model to a dictionary."""
