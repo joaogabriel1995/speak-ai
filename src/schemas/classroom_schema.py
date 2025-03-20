@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, constr
+from pydantic import BaseModel, Field, constr, ConfigDict
 from typing import List, Annotated
 from .wekly_plan_detail_schema import DailyPlan
 
@@ -22,3 +22,10 @@ class ClassRoomInput(BaseModel):
     def to_json(self) -> str:
         """Converts the model to a JSON string."""
         return self.model_dump_json(indent=2)
+
+    model_config = ConfigDict(
+        alias_generator=lambda x: ''.join(
+            word.capitalize() if i else word for i, word in enumerate(x.split("_"))
+        ),
+        populate_by_name=True
+    )
