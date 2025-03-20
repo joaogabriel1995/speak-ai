@@ -25,6 +25,15 @@ class ListeningToolOutput(BaseModel):
             example="In this audio, the speaker discusses key aspects of English pronunciation, emphasizing rhythm and stress.",
         ),
     ]
+    youtube_url: str = Field(
+        ...,
+        description=(
+            "Url for transcription source. This field should contain the URL of the YouTube video "
+            "or podcast episode that was used as the source for the transcription. This is important for "
+            "reference and verification purposes."
+        ),
+        example="https://www.youtube.com/watch?v=video_id",)
+    
     def to_dict(self) -> dict:
         """Converts the model to a dictionary."""
         return self.model_dump()
