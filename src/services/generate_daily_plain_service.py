@@ -23,6 +23,7 @@ class GenerateLearningDetailService:
         hour_day: int,
         level: str,
     ) -> WeeklyStudyPlanDetail:
+        print("level", level)
         weekly_activity_chain_input = WeeklyActivityChainInput(
             objective=objective,
             activities=activities,
