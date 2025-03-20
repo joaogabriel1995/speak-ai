@@ -16,7 +16,7 @@ class ClassRoomChain:
 
         self.api_key = api_key
         self.prompt = weekly_activity_prompt()
-        self.llm = ChatOpenAI(model="gpt-4o-mini", api_key=api_key)
+        self.llm = ChatOpenAI(model="gpt-4o", api_key=api_key)
         self.output_parser = PydanticOutputParser(pydantic_object=ClassRoomInput)
         self.format_instructions = self.output_parser.get_format_instructions()
         self.llm_with_tool = self.llm.bind_tools([self.listening])
@@ -37,7 +37,7 @@ class ClassRoomChain:
 
             # Processa cada atividade do dia
             for activity in daily.activities:
-                if activity.skill == "listening":
+                if activity.skill == "LISTENING":
                     # Gera o conteúdo utilizando a ferramenta de listening
 
                     generated_content = await self.listening(
@@ -54,38 +54,38 @@ class ClassRoomChain:
                     )
                     updated_activities.append(updated_activity)
 
-                elif activity.skill == "speaking":
+                elif activity.skill == "SPEAKING":
                     # Implementar atualização específica para speaking, se necessário
                     updated_activity = DailyActivityWithContent(
                         **activity.model_dump(), content=None
                     )
                     updated_activities.append(updated_activity)
 
-                elif activity.skill == "vocabulary":
+                elif activity.skill == "VOCABULARY":
                     updated_activity = DailyActivityWithContent(
                         **activity.model_dump(), content=None
                     )
                     updated_activities.append(updated_activity)
 
-                elif activity.skill == "pronunciation":
+                elif activity.skill == "PRONUNCIATION":
                     updated_activity = DailyActivityWithContent(
                         **activity.model_dump(), content=None
                     )
                     updated_activities.append(updated_activity)
 
-                elif activity.skill == "grammar":
+                elif activity.skill == "GRAMMAR":
                     updated_activity = DailyActivityWithContent(
                         **activity.model_dump(), content=None
                     )
                     updated_activities.append(updated_activity)
 
-                elif activity.skill == "writing":
+                elif activity.skill == "WRITING":
                     updated_activity = DailyActivityWithContent(
                         **activity.model_dump(), content=None
                     )
                     updated_activities.append(updated_activity)
 
-                elif activity.skill == "reading":
+                elif activity.skill == "READING":
                     updated_activity = DailyActivityWithContent(
                         **activity.model_dump(), content=None
                     )
