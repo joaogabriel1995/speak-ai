@@ -23,6 +23,7 @@ class LearningHubService:
         hour_day: int,
         level: str,
         user_id: str,
+        learning_journey_id: str,
     ):
         weekly_study_plan_detail = await self.generate_learning_detail_service.execute(
             objective, activities, theory, days_week, hour_day, level
@@ -32,6 +33,8 @@ class LearningHubService:
         )
 
         result = await self.classroom_service.execute(class_room_input)
-        weekly = WeeklyStudyPlanDetailWithContent(**result,user_id=user_id)
-        weekly_plan_json = weekly.model_dump_json(indent=2)
+        weekly = result.model_copy(update={"user_id": user_id, "learning_journey_id": learning_journey_id}) 
+        weekly_plan_json = weekly.model_dump()
+        from pprint import pprint
+        pprint(weekly_plan_json)
         await self.rabbit.publish("weekly_detail_plan", weekly_plan_json)
